@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MyGame</title>
+		<style>
+			#canvas{
+				border: 1px solid black;
+				background-image: url("back.jpg");
+				margin-left:100px;
+				
+			}
+			
+		</style>
+	</head>
+	<body onload="StartGame()">
+	  <div>
+		<canvas id="canvas" height="500" width="750"></canvas></div>
+		<div>
+		<h2 style="position:absolute;right:150px; top:20px">Time: <span id="tm"></span></h2></div>
+		<div><h2 style="position:absolute;right:170px; top:50px">Score: <span id="sc"></span></h2></div>
+		
+		<script>
+			var basket;
+			var candies=[];
+			var time=500;
+			var candycount=5;
+			var score=0;
+			
+			var interval;
+			var GameArea2={canvas: document.getElementById("canvas"),
+				start: function(){
+					var ctx=this.canvas.getContext("2d");
+				
+					this.canvas.style.backgroundImage="url('back.jpg')";
+					console.log("jaa taa")
+					ctx.font = "20px Georgia";
+					ctx.fillText("your score is:"+score, 250, 250);
+				}
+				}
+			var GameArea={
+				canvas: document.getElementById("canvas"),
+				start: function(){
+					this.context=this.canvas.getContext("2d");
+					this.interval=setInterval(updateGame,20);
+					
+    
+				},
+				clear: function()
+				{
+					this.context.clearRect(0,0,this.canvas.height,this.canvas.width);
+				},
+				stop: function()
+				{
+					clearInterval(this.interval);
+				}
+			
+			}
+			var StartGame=function()
+			{
+				GameArea.start();
+				basket= new component(50,420,"bowl.jpg",80,80,"image");
+				 
+				for(i=0;i<candycount;i++)
+				{
+					var myRandom=Math.floor(Math.random()*200);
+					var RandomSpeed=Math.floor(Math.random()*4+1);
+					console.log("hi"+i)
+					candies.push(new component(myRandom,0,"candy.jpg",50,50,"image",RandomSpeed))
+				}
+				
+			}
+			var component=function(x,y,color,height,width,type,speed)
+			{
+				console.log("component")
+				this.x=x;
+				this.y=y;
+				this.speedX = 0;
+				this.speedY = 0;
+				this.speed=speed;
+				this.type=type;
+				this.height=height;
+				this.width=width;
+				if(this.type=="image")
+				{
+					this.image=new Image();
+					this.image.src=color;
+				}
+				
+				this.update=function(){
+				var ctx=GameArea.context;
+				if(this.type=="image")
+				{
+					ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
+				}
+				
+				}
+				 this.newPos = function() {
+					this.x += this.speedX;
+					this.y += this.speedY;        
+					}    
+			}
+			
+			var updateGame=function(){
+				GameArea.clear();
+				GameArea.speedX = 0;
+				GameArea.speedY = 0;    
+				
+				for (var i = 0; i < candycount; i++) {
+				candies[i].y=candies[i].y+candies[i].speed;
+				if(candies[i].x>=basket.x && candies[i].x<=basket.x+basket.width && candies[i].y>=basket.y && candies[i].y<=basket.y+basket.height){
+            	candies[i].y=0;
+				score++;
+            	console.log("colli")
+            	candies[i].x=0;
+            	
+            }
+				candies[i].update();
+			}
+				
+				basket.newPos();
+				basket.update();
+				if(time==0)
+				{
+					
+					//basket.x=0;
+					//basket.y=0;
+					//
+					
+					GameArea.stop();
+					GameArea.clear();
+					GameArea2.start();
+					//alert("your score is:"+score);
+					
+					
+				}
+				else
+					{
+						document.getElementById("tm").innerHTML=--time;
+						document.getElementById("sc").innerHTML=score;
+					}
+			}
+			window.onkeydown=function(e)
+			{
+				var keyCode=e.which;
+				if(keyCode==39)
+				{
+					basket.x=basket.x+5;
+				}
+				if(keyCode==37)
+				{
+					basket.x=basket.x-5;
+				}
+			}
+			
+			
+		</script>
+		
+	</body>
+</html>
